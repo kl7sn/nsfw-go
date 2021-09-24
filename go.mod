@@ -7,4 +7,5 @@ require (
 	github.com/gotomicro/ego v0.6.12
 	github.com/kshedden/gonpy v0.0.0-20210519231815-fa3c8dd8e59b
 	github.com/tensorflow/tensorflow v1.5.1
+	gocv.io/x/gocv v0.28.0
 )

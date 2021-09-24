@@ -2,12 +2,14 @@ package main
 
 import (
 	"fmt"
+
 	"github.com/gotomicro/ego"
 	"github.com/gotomicro/ego/core/elog"
 	"github.com/gotomicro/ego/server/egin"
-	"github.com/kl7sn/nsfw-go/internal/apiv1"
 	tf "github.com/tensorflow/tensorflow/tensorflow/go"
 	"github.com/tensorflow/tensorflow/tensorflow/go/op"
+
+	"github.com/kl7sn/nsfw-go/internal/apiv1"
 )
 
 func main() {

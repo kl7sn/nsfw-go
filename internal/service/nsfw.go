@@ -18,6 +18,7 @@ const (
 
 type NsfwService struct {
 	Weights []float64
+	Predictions  tf.Output
 }
 
 func NewNsfwService() *NsfwService {
@@ -30,9 +31,17 @@ func (n *NsfwService) Build(weightsPath string, inputType int) (err error) {
 		inputTensor tf.Output
 	)
 
-	r, _ := gonpy.NewFileReader(weightsPath)
-	n.Weights, _ = r.GetFloat64()
-
+	r, err := gonpy.NewFileReader(weightsPath)
+	if err != nil {
+		fmt.Println("NewFileReader err ", err.Error())
+		return
+	}
+	n.Weights, err = r.GetFloat64()
+	if err != nil {
+		fmt.Printf("GetFloat64 err: %s. data type :%s \n", err.Error(),	r.Dtype)
+		return
+	}
+	fmt.Println("n.Weights,",	n.Weights)
 	switch inputType {
 	case TENSOR:
 		s := op.NewScope()
@@ -43,7 +52,6 @@ func (n *NsfwService) Build(weightsPath string, inputType int) (err error) {
 		input = op.Placeholder(s, tf.String, op.PlaceholderShape(tf.MakeShape(0)))
 		// TODO 这里没有传入需要的数据
 		inputTensor = op.DecodeBase64(s, tf.Output{})
-
 	default:
 		err = errors.New(fmt.Sprintf("Invalid input type %d", inputType))
 		return
@@ -83,7 +91,7 @@ func (n *NsfwService) prediction(x tf.Output) {
 	x = op.Reshape(s, x, op.Const(s, []int64{-1, 1024}))
 
 	logits := n.fullyConnected("fc_nsfw", x, 2)
-	predictions := op.Softmax(s, logits)
+	n.Predictions = op.Softmax(s, logits)
 }
 
 func (n *NsfwService) getWeights(layerName, fieldName string) (x tf.Output) {
